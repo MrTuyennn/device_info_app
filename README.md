@@ -222,9 +222,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🤝 Support
 
-- 📧 Email: [your-email@example.com]
-- 🐛 Issues: [GitHub Issues](https://github.com/your-username/device_info_app/issues)
-- 📖 Documentation: [pub.dev](https://pub.dev/packages/device_info_app)
+- 📧 Email: [nguyenngoctuyen188@gmail.com]
+- 🐛 Issues: [GitHub Issues](https://github.com/MrTuyennn/device_info_app/issues)
+- 📖 Documentation: [pub.dev](https://github.com/MrTuyennn/device_info_app)
 
 ## 🙏 Acknowledgments
 
