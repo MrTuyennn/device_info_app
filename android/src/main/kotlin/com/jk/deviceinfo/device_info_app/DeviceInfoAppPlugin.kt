@@ -1,5 +1,6 @@
 package com.jk.deviceinfo.device_info_app
 
+import android.app.ActivityManager
 import android.content.Context
 import android.os.Build
 import android.provider.Settings
@@ -34,10 +35,14 @@ class DeviceInfoAppPlugin :
         result: Result
     ) {
        if (call.method == "getDeviceInfo"){
+           val activityManager: ActivityManager =
+               appContext.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
             val packageManager = appContext.packageManager
             val info = packageManager.getPackageInfo(appContext.packageName, 0)
             val language = Locale.getDefault().language
             val diaCode = Locale.getDefault().country
+           val memoryInfo: ActivityManager.MemoryInfo = ActivityManager.MemoryInfo()
+             activityManager.getMemoryInfo(memoryInfo)
             val infoApp = AppInfo().apply {
                 displayName = info.applicationInfo?.loadLabel(packageManager).toString()
                 bundleName = appContext.packageName
@@ -51,6 +56,9 @@ class DeviceInfoAppPlugin :
                 timeZone = TimeZone.getDefault().id.toString();
                 alphaCode = diaCode
                 locale = LocaleApp(language.toString(),diaCode.toString())
+                isLowRamDevice = memoryInfo.lowMemory
+                physicalRamSize = (memoryInfo.totalMem / 1048576L).toInt()
+                availableRamSize = (memoryInfo.availMem / 1048576L).toInt()
             }
             result.success(infoApp.toJson())
         } else {

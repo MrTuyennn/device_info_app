@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:device_info_app/device_info_app.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,44 +15,54 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  DeviceInfo? _platformVersion;
-  final _deviceInfoAppPlugin = DeviceInfoApp();
+  final _deviceInfoApp = DeviceInfoApp();
+  DeviceInfo? _deviceInfo;
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
+    _loadDeviceInfo();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    DeviceInfo? platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
+  Future<void> _loadDeviceInfo() async {
     try {
-      platformVersion = await _deviceInfoAppPlugin.getDeviceInfo();
-    } on PlatformException {
-      print('Failed to get platform version.');
+      final deviceInfo = await _deviceInfoApp.getDeviceInfo();
+      setState(() {
+        _deviceInfo = deviceInfo;
+      });
+    } catch (e) {
+      print('Error getting device info: $e');
     }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    print(platformVersion.toString());
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: const Text('Plugin example app')),
-        body: Center(child: Text('Running on: ${_platformVersion?.uuid}\n')),
+        appBar: AppBar(title: Text('Device Info')),
+        body: _deviceInfo == null
+            ? Center(child: CircularProgressIndicator())
+            : Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('App Version: ${_deviceInfo!.versionNumber}'),
+                    Text('Build Number: ${_deviceInfo!.buildNumber}'),
+                    Text('App Name: ${_deviceInfo!.displayName}'),
+                    Text('Bundle ID: ${_deviceInfo!.bundleName}'),
+                    Text('Device UUID: ${_deviceInfo!.uuid}'),
+                    Text('Locales: ${_deviceInfo!.locales}'),
+                    Text('Time Zone: ${_deviceInfo!.timeZone}'),
+                    Text('Country Code: ${_deviceInfo!.alphaCode}'),
+                    Text('Language: ${_deviceInfo!.localeApp.languageCode}'),
+                    Text('availableRamSize: ${_deviceInfo!.availableRamSize}'),
+                    Text('physicalRamSize: ${_deviceInfo!.physicalRamSize}'),
+                    Text('isLowRamDevice: ${_deviceInfo!.isLowRamDevice}'),
+                    Text('totalRam: ${_deviceInfo!.totalRam}'),
+                  ],
+                ),
+              ),
       ),
     );
   }

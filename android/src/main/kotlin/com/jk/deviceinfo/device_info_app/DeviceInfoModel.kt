@@ -11,6 +11,11 @@ class AppInfo {
     var timeZone: String = ""
     var locale: LocaleApp = LocaleApp("","")
 
+    var isLowRamDevice: Boolean = false
+    var physicalRamSize: Int = 0
+    var availableRamSize: Int = 0
+
+
     fun toJson(): Map<String, Any> {
         return mapOf(
             "versionNumber" to versionNumber,
@@ -21,7 +26,10 @@ class AppInfo {
             "locales" to locales,
             "timeZone" to timeZone,
             "alphaCode" to alphaCode,
-            "locale" to locale.toJson()
+            "locale" to locale.toJson(),
+            "isLowRamDevice" to isLowRamDevice,
+            "physicalRamSize" to physicalRamSize,
+            "availableRamSize" to availableRamSize
         )
     }
 }

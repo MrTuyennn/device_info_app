@@ -1,3 +1,5 @@
+import 'dart:math';
+
 class DeviceInfo {
   String versionNumber;
   String buildNumber;
@@ -8,6 +10,10 @@ class DeviceInfo {
   String timeZone;
   String alphaCode;
   LocaleApp localeApp;
+  bool isLowRamDevice;
+  int physicalRamSize;
+  int availableRamSize;
+  int totalRam;
 
   DeviceInfo({
     required this.versionNumber,
@@ -19,6 +25,10 @@ class DeviceInfo {
     required this.timeZone,
     required this.alphaCode,
     required this.localeApp,
+    required this.isLowRamDevice,
+    required this.physicalRamSize,
+    required this.availableRamSize,
+    required this.totalRam,
   });
 
   DeviceInfo.fromJson(Map<dynamic, dynamic> json)
@@ -30,7 +40,11 @@ class DeviceInfo {
       locales = json["locales"] ?? '',
       timeZone = json["timeZone"] ?? '',
       alphaCode = json["alphaCode"] ?? '',
-      localeApp = LocaleApp.fromJson(json["locale"] ?? {});
+      localeApp = LocaleApp.fromJson(json["locale"] ?? {}),
+      isLowRamDevice = json["isLowRamDevice"] ?? false,
+      physicalRamSize = json["physicalRamSize"] ?? 0,
+      availableRamSize = json["availableRamSize"] ?? 0,
+      totalRam = totalRamDevice(json["physicalRamSize"] ?? 0);
 }
 
 class LocaleApp {
@@ -41,4 +55,18 @@ class LocaleApp {
   LocaleApp.fromJson(Map<dynamic, dynamic> json)
     : languageCode = json["languageCode"] ?? '',
       countryCode = json["countryCode"] ?? '';
+}
+
+int totalRamDevice(int physicalRamSize) => roundDouble(physicalRamSize / 1024, 1);
+
+int roundDouble(double value, int places) {
+  num mod = pow(10.0, places);
+  final totalRamInGB = ((value * mod).round().toDouble() / mod);
+  if (totalRamInGB >= 7) {
+    return 6; // Cao cấp
+  } else if (totalRamInGB >= 5) {
+    return 4; // Trung cấp
+  } else {
+    return 2; // Phổ thông
+  }
 }

@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import MachO
+import Darwin.Mach
 
 struct AppInfo {
     let versionNumber : String
@@ -16,6 +18,8 @@ struct AppInfo {
     let locales: String
     let timeZone: String
     let locale: LocaleApp
+    let physicalRamSize: Int
+    let availableRamSize: Int
     
     func toJson() -> [String: Any] {
             return [
@@ -26,7 +30,9 @@ struct AppInfo {
                 "uuid": uuid,
                 "locales": locales,
                 "timeZone":timeZone,
-                "locale": locale.toJson()
+                "locale": locale.toJson(),
+                "physicalRamSize": physicalRamSize,
+                "availableRamSize": availableRamSize
             ]
         }
 }
@@ -64,8 +70,37 @@ func versionApp() -> AppInfo {
         uuid: uuid,
         locales: locale,
         timeZone: timeZone,
-        locale: LocaleApp(languageCode: languageCode ?? "en", countryCode: countryCode ?? "US")
+        locale: LocaleApp(languageCode: languageCode ?? "en", countryCode: countryCode ?? "US"),
+        physicalRamSize: physicalRamSizeInMB(),
+        availableRamSize: availableMemoryInMB(),
     )
+}
+
+/// RAM khả dụng (MB) của thiết bị
+func availableMemoryInMB() -> Int {
+    var pageSize: vm_size_t = 0
+    host_page_size(mach_host_self(), &pageSize)
+
+    var stats = vm_statistics64()
+    var count = mach_msg_type_number_t(MemoryLayout<vm_statistics64_data_t>.size / MemoryLayout<integer_t>.size)
+
+    let result: kern_return_t = withUnsafeMutablePointer(to: &stats) { ptr in
+        ptr.withMemoryRebound(to: integer_t.self, capacity: Int(count)) { intPtr in
+            host_statistics64(mach_host_self(), HOST_VM_INFO64, intPtr, &count)
+        }
+    }
+
+    guard result == KERN_SUCCESS else {
+        return -1
+    }
+
+    let memFreeBytes = UInt64(stats.free_count) * UInt64(pageSize)
+    return Int(memFreeBytes / 1_048_576) // 1024*1024
+}
+
+/// RAM vật lý (MB) của thiết bị
+func physicalRamSizeInMB() -> Int {
+    return Int(ProcessInfo.processInfo.physicalMemory / 1_048_576)
 }
 
 
