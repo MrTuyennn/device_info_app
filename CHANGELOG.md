@@ -1,25 +1,33 @@
+## 1.0.2
+
+- fix some bug
+
 ## 1.0.1
 
 ### 🚀 New Features & Improvements
 
 #### ✨ RAM Information Support
+
 - **Device RAM Details**: Get comprehensive RAM information including total memory, available memory, and memory usage statistics
 - **Memory Monitoring**: Real-time memory usage tracking for better app performance optimization
 - **Cross-Platform RAM Data**: Consistent RAM information across Android and iOS platforms
 
 #### 📱 Enhanced Device Information
+
 - Added `totalRam` - Total device RAM in bytes
-- Added `availableRam` - Currently available RAM in bytes  
+- Added `availableRam` - Currently available RAM in bytes
 - Added `usedRam` - Currently used RAM in bytes
 - Added `ramUsagePercentage` - RAM usage as percentage (0-100)
 - Added `ramInfo` - Detailed RAM information object
 
 #### 🔧 API Updates
+
 - Enhanced `getDeviceInfo()` method now returns RAM information
 - Updated `DeviceInfo` model with new RAM properties
 - Improved error handling for memory-related operations
 
 #### 🐛 Bug Fixes
+
 - Fixed potential null pointer exceptions in device info retrieval
 - Improved memory allocation handling in native implementations
 - Enhanced error messages for better debugging
@@ -51,7 +59,7 @@
 - `getDeviceInfo()` - Returns comprehensive device and app information
 - Returns `DeviceInfo` model with the following properties:
   - `versionNumber` - App version number
-  - `buildNumber` - App build number  
+  - `buildNumber` - App build number
   - `displayName` - App display name
   - `bundleName` - App bundle identifier
   - `uuid` - Device unique identifier
@@ -90,4 +98,4 @@ print('Platform: ${deviceInfo.locales}');
 
 ## 0.0.1
 
-* Initial development version
+- Initial development version

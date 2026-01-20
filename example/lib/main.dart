@@ -15,7 +15,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final _deviceInfoApp = DeviceInfoApp();
   DeviceInfo? _deviceInfo;
 
   @override
@@ -26,10 +25,11 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _loadDeviceInfo() async {
     try {
-      final deviceInfo = await _deviceInfoApp.getDeviceInfo();
+      final deviceInfo = await DeviceInfoApp.getDeviceInfo();
       setState(() {
         _deviceInfo = deviceInfo;
       });
+      print(_deviceInfo.toString());
     } catch (e) {
       print('Error getting device info: $e');
     }

@@ -1,34 +1,34 @@
 import 'dart:math';
 
 class DeviceInfo {
-  String versionNumber;
-  String buildNumber;
-  String displayName;
-  String bundleName;
-  String uuid;
-  String locales;
-  String timeZone;
-  String alphaCode;
-  LocaleApp localeApp;
-  bool isLowRamDevice;
-  int physicalRamSize;
-  int availableRamSize;
-  int totalRam;
+  final String versionNumber;
+  final String buildNumber;
+  final String displayName;
+  final String bundleName;
+  final String uuid;
+  final String locales;
+  final String timeZone;
+  final String alphaCode;
+  final LocaleApp localeApp;
+  final bool isLowRamDevice;
+  final int physicalRamSize;
+  final int availableRamSize;
+  final int totalRam;
 
   DeviceInfo({
-    required this.versionNumber,
-    required this.buildNumber,
-    required this.displayName,
-    required this.bundleName,
-    required this.uuid,
-    required this.locales,
-    required this.timeZone,
-    required this.alphaCode,
-    required this.localeApp,
-    required this.isLowRamDevice,
-    required this.physicalRamSize,
-    required this.availableRamSize,
-    required this.totalRam,
+    this.versionNumber = '',
+    this.buildNumber = '',
+    this.displayName = '',
+    this.bundleName = '',
+    this.uuid = '',
+    this.locales = '',
+    this.timeZone = '',
+    this.alphaCode = '',
+    this.localeApp = const LocaleApp(),
+    this.isLowRamDevice = false,
+    this.physicalRamSize = 0,
+    this.availableRamSize = 0,
+    this.totalRam = 0,
   });
 
   DeviceInfo.fromJson(Map<dynamic, dynamic> json)
@@ -48,25 +48,27 @@ class DeviceInfo {
 }
 
 class LocaleApp {
-  String languageCode;
-  String countryCode;
+  final String languageCode;
+  final String countryCode;
 
-  LocaleApp({required this.languageCode, required this.countryCode});
+  const LocaleApp({this.languageCode = '', this.countryCode = ''});
+
   LocaleApp.fromJson(Map<dynamic, dynamic> json)
     : languageCode = json["languageCode"] ?? '',
       countryCode = json["countryCode"] ?? '';
 }
 
-int totalRamDevice(int physicalRamSize) => roundDouble(physicalRamSize / 1024, 1);
+int totalRamDevice(int physicalRamSize) =>
+    roundDouble(physicalRamSize / 1024, 1);
 
 int roundDouble(double value, int places) {
   num mod = pow(10.0, places);
   final totalRamInGB = ((value * mod).round().toDouble() / mod);
   if (totalRamInGB >= 7) {
-    return 6; // Cao cấp
+    return 6;
   } else if (totalRamInGB >= 5) {
-    return 4; // Trung cấp
+    return 4;
   } else {
-    return 2; // Phổ thông
+    return 2;
   }
 }
