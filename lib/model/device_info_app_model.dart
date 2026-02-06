@@ -45,6 +45,25 @@ class DeviceInfo {
       physicalRamSize = json["physicalRamSize"] ?? 0,
       availableRamSize = json["availableRamSize"] ?? 0,
       totalRam = totalRamDevice(json["physicalRamSize"] ?? 0);
+
+  Map<String, dynamic> toJson() => {
+    "versionNumber": versionNumber,
+    "buildNumber": buildNumber,
+    "displayName": displayName,
+    "bundleName": bundleName,
+    "uuid": uuid,
+    "locales": locales,
+    "timeZone": timeZone,
+    "alphaCode": alphaCode,
+    "locale": {
+      "languageCode": localeApp.languageCode,
+      "countryCode": localeApp.countryCode,
+    },
+    "isLowRamDevice": isLowRamDevice,
+    "physicalRamSize": physicalRamSize,
+    "availableRamSize": availableRamSize,
+    "totalRam": totalRam,
+  };
 }
 
 class LocaleApp {

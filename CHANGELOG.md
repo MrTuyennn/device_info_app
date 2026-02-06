@@ -1,3 +1,7 @@
+## 1.0.4
+
+- add toJson Device Info
+
 ## 1.0.3
 
 - fix some bug
