@@ -1,4 +1,4 @@
-import 'package:device_info_app/model/device_info_app.dart';
+import 'package:device_info_app/model/device_info_app_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 

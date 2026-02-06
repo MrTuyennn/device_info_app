@@ -1,8 +1,8 @@
-import 'package:device_info_app/model/device_info_app.dart';
+import 'package:device_info_app/model/device_info_app_model.dart';
 
 import 'device_info_app_platform_interface.dart';
 
-export './model/device_info_app.dart';
+export './model/device_info_app_model.dart';
 
 class DeviceInfoApp {
   DeviceInfoApp._();

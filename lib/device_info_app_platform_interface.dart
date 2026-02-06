@@ -1,4 +1,4 @@
-import 'package:device_info_app/model/device_info_app.dart';
+import 'package:device_info_app/model/device_info_app_model.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'device_info_app_method_channel.dart';

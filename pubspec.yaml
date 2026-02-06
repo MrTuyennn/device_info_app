@@ -1,6 +1,6 @@
 name: device_info_app
 description: "A comprehensive Flutter plugin for retrieving detailed device and application information across Android and iOS platforms."
-version: 1.0.2
+version: 1.0.3
 homepage: https://github.com/MrTuyennn/device_info_app
 repository: https://github.com/MrTuyennn/device_info_app
 issue_tracker: https://github.com/MrTuyennn/device_info_app/issues
