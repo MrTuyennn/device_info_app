@@ -7,9 +7,16 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 class MockDeviceInfoAppPlatform
     with MockPlatformInterfaceMixin
     implements DeviceInfoAppPlatform {
-
   @override
-  Future<String?> getPlatformVersion() => Future.value('42');
+  Future<DeviceInfo> getDeviceInfo() => Future.value(
+        DeviceInfo(
+          versionNumber: '2.0.0',
+          buildNumber: '7',
+          displayName: 'Mock App',
+          bundleName: 'com.example.mock',
+          alphaCode: 'KR',
+        ),
+      );
 }
 
 void main() {
@@ -19,11 +26,14 @@ void main() {
     expect(initialPlatform, isInstanceOf<MethodChannelDeviceInfoApp>());
   });
 
-  test('getPlatformVersion', () async {
-    DeviceInfoApp deviceInfoAppPlugin = DeviceInfoApp();
+  test('getDeviceInfo', () async {
     MockDeviceInfoAppPlatform fakePlatform = MockDeviceInfoAppPlatform();
     DeviceInfoAppPlatform.instance = fakePlatform;
 
-    expect(await deviceInfoAppPlugin.getPlatformVersion(), '42');
+    final deviceInfo = await DeviceInfoApp.getDeviceInfo();
+    expect(deviceInfo?.versionNumber, '2.0.0');
+    expect(deviceInfo?.bundleName, 'com.example.mock');
+    expect(deviceInfo?.alphaCode, 'KR');
+    expect(deviceInfo?.areaCode, '82');
   });
 }
