@@ -4,14 +4,17 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Flutter](https://img.shields.io/badge/Flutter-3.3.0+-blue.svg)](https://flutter.dev)
 
-A comprehensive Flutter plugin for retrieving detailed device and application information across Android and iOS platforms. Get device model, app version, locale information, and much more with a simple, type-safe API.
+A comprehensive Flutter plugin for retrieving detailed device and application information across Android and iOS platforms. Get device model, app version, locale information, RAM/disk size, build info, and much more with a simple, type-safe API.
 
 ## ✨ Features
 
-- 📱 **Device Information**: Model, brand, platform version, unique identifier
+- 📱 **Device Information**: Model, brand, manufacturer, system name/version, unique identifier
 - 📦 **App Information**: Version, build number, bundle identifier, display name
-- 🧠 **RAM Information**: Total RAM, available RAM, used RAM, memory usage percentage
-- 🌍 **Localization**: Device locale, timezone, country codes
+- 🧠 **RAM Information**: Physical RAM, available RAM, low-RAM device flag
+- 💾 **Disk Information**: Free and total internal storage size
+- 🌍 **Localization**: Device locale, timezone, country code, and derived international dial (area) code
+- 🛠️ **Build Info**: Android `Build.*` properties (board, fingerprint, hardware, supported ABIs, system features, ...) and iOS device details (device name, model name, localized model, `uname()` info)
+- 🤖 **Emulator/Simulator Detection**: `isPhysicalDevice` flag on both platforms
 - 🔒 **Type-Safe**: Strongly typed Dart models with null safety
 - 🚀 **Cross-Platform**: Full support for Android and iOS
 - ⚡ **Performance**: Efficient method channel communication
@@ -30,7 +33,7 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  device_info_app: ^1.0.1
+  device_info_app: ^1.1.0
 ```
 
 Then run:
@@ -52,7 +55,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final _deviceInfoApp = DeviceInfoApp();
   DeviceInfo? _deviceInfo;
 
   @override
@@ -61,17 +63,9 @@ class _MyAppState extends State<MyApp> {
     _loadDeviceInfo();
   }
 
-  // Helper function to format bytes
-  String _formatBytes(int bytes) {
-    if (bytes < 1024) return '$bytes B';
-    if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
-    return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
-  }
-
   Future<void> _loadDeviceInfo() async {
     try {
-      final deviceInfo = await _deviceInfoApp.getDeviceInfo();
+      final deviceInfo = await DeviceInfoApp.getDeviceInfo();
       setState(() {
         _deviceInfo = deviceInfo;
       });
@@ -87,7 +81,7 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(title: Text('Device Info')),
         body: _deviceInfo == null
             ? Center(child: CircularProgressIndicator())
-            : Padding(
+            : SingleChildScrollView(
                 padding: EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,14 +94,15 @@ class _MyAppState extends State<MyApp> {
                     Text('Locales: ${_deviceInfo!.locales}'),
                     Text('Time Zone: ${_deviceInfo!.timeZone}'),
                     Text('Country Code: ${_deviceInfo!.alphaCode}'),
+                    Text('Area Code: +${_deviceInfo!.areaCode}'),
                     Text('Language: ${_deviceInfo!.localeApp.languageCode}'),
-                    Text('Country: ${_deviceInfo!.localeApp.countryCode}'),
                     const SizedBox(height: 16),
-                    const Text('RAM Information:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                    Text('Total RAM: ${_formatBytes(_deviceInfo!.totalRam)}'),
-                    Text('Available RAM: ${_formatBytes(_deviceInfo!.availableRam)}'),
-                    Text('Used RAM: ${_formatBytes(_deviceInfo!.usedRam)}'),
-                    Text('RAM Usage: ${_deviceInfo!.ramUsagePercentage.toStringAsFixed(1)}%'),
+                    const Text('RAM & Disk:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    Text('Physical RAM: ${_deviceInfo!.physicalRamSize} MB'),
+                    Text('Available RAM: ${_deviceInfo!.availableRamSize} MB'),
+                    Text('Is Low RAM Device: ${_deviceInfo!.isLowRamDevice}'),
+                    Text('Free Disk: ${_deviceInfo!.freeDiskSize} MB'),
+                    Text('Total Disk: ${_deviceInfo!.totalDiskSize} MB'),
                   ],
                 ),
               ),
@@ -120,59 +115,32 @@ class _MyAppState extends State<MyApp> {
 ### Advanced Usage
 
 ```dart
-// Get device info with error handling
 Future<void> getDeviceInfoSafely() async {
   try {
-    final deviceInfo = await _deviceInfoApp.getDeviceInfo();
-    
-    // Check if running on specific platform
-    if (deviceInfo.locales.contains('Android')) {
-      print('Running on Android');
-    } else if (deviceInfo.locales.contains('iOS')) {
-      print('Running on iOS');
-    }
-    
+    final deviceInfo = await DeviceInfoApp.getDeviceInfo();
+
     // Access detailed locale information
     final locale = deviceInfo.localeApp;
     print('Language: ${locale.languageCode}');
     print('Country: ${locale.countryCode}');
-    
-    // Monitor RAM usage
-    print('RAM Usage: ${deviceInfo.ramUsagePercentage.toStringAsFixed(1)}%');
-    print('Total RAM: ${_formatBytes(deviceInfo.totalRam)}');
-    print('Available RAM: ${_formatBytes(deviceInfo.availableRam)}');
-    
-    // Check if device has low memory
-    if (deviceInfo.ramUsagePercentage > 80) {
-      print('Warning: High RAM usage detected!');
+    print('Area code: +${deviceInfo.areaCode}');
+
+    // Check device capability
+    if (deviceInfo.isLowRamDevice) {
+      print('Warning: running on a low-RAM device, consider reducing memory usage.');
     }
-    
+    if (!deviceInfo.isPhysicalDevice) {
+      print('Running on an emulator/simulator.');
+    }
+
+    // Native build info (Android-specific fields are empty on iOS and vice versa)
+    print('Model: ${deviceInfo.model} (${deviceInfo.modelName})');
+    print('System: ${deviceInfo.systemName} ${deviceInfo.systemVersion}');
+    print('Kernel: ${deviceInfo.utsname.sysname} ${deviceInfo.utsname.release}');
   } on PlatformException catch (e) {
     print('Platform error: ${e.message}');
   } catch (e) {
     print('Unexpected error: $e');
-  }
-}
-
-// RAM monitoring example
-class RamMonitor {
-  final DeviceInfoApp _deviceInfoApp = DeviceInfoApp();
-  Timer? _timer;
-  
-  void startMonitoring() {
-    _timer = Timer.periodic(Duration(seconds: 5), (timer) async {
-      final deviceInfo = await _deviceInfoApp.getDeviceInfo();
-      print('RAM Usage: ${deviceInfo.ramUsagePercentage.toStringAsFixed(1)}%');
-      
-      if (deviceInfo.ramUsagePercentage > 90) {
-        print('Critical: RAM usage is very high!');
-        // Implement memory cleanup logic here
-      }
-    });
-  }
-  
-  void stopMonitoring() {
-    _timer?.cancel();
   }
 }
 ```
@@ -187,10 +155,10 @@ The main class for accessing device information.
 
 ##### `getDeviceInfo()`
 
-Returns a `Future<DeviceInfo>` containing comprehensive device and app information.
+Returns a `Future<DeviceInfo?>` containing comprehensive device and app information. The result is cached after the first successful call.
 
 **Returns:**
-- `Future<DeviceInfo>` - Device and app information
+- `Future<DeviceInfo?>` - Device and app information
 
 **Throws:**
 - `PlatformException` - If the platform doesn't support the operation
@@ -199,7 +167,7 @@ Returns a `Future<DeviceInfo>` containing comprehensive device and app informati
 
 The data model containing all device and app information.
 
-#### Properties
+#### App & locale properties
 
 | Property | Type | Description |
 |----------|------|-------------|
@@ -210,23 +178,82 @@ The data model containing all device and app information.
 | `uuid` | `String` | Device unique identifier |
 | `locales` | `String` | Device locale information |
 | `timeZone` | `String` | Device timezone |
-| `alphaCode` | `String` | Country alpha code |
+| `alphaCode` | `String` | Country alpha code from device locale (e.g. "VN") |
+| `areaCode` | `String` | International dial code derived from `alphaCode` (e.g. "84"). Computed, always in sync with `alphaCode` |
 | `localeApp` | `LocaleApp` | Detailed locale information |
-| `totalRam` | `int` | Total device RAM in bytes |
-| `availableRam` | `int` | Currently available RAM in bytes |
-| `usedRam` | `int` | Currently used RAM in bytes |
-| `ramUsagePercentage` | `double` | RAM usage percentage (0-100) |
+
+#### RAM & disk properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `isLowRamDevice` | `bool` | Whether the OS considers this a low-RAM device |
+| `physicalRamSize` | `int` | Total physical RAM in MB |
+| `availableRamSize` | `int` | Currently available RAM in MB |
+| `totalRam` | `int` | RAM bucketed to 2, 4, or 6 (GB) |
+| `freeDiskSize` | `int` | Free internal storage in MB |
+| `totalDiskSize` | `int` | Total internal storage in MB |
+
+#### Shared device/build properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `brand` | `String` | Device brand |
+| `manufacturer` | `String` | Device manufacturer |
+| `model` | `String` | Device model. **Differs per platform**: specific hardware model on Android (e.g. "SM-G991B"), generic device type on iOS (e.g. "iPhone"). Use `modelName` for the specific iOS hardware identifier |
+| `systemName` | `String` | OS name (e.g. "Android", "iOS") |
+| `systemVersion` | `String` | OS version |
+| `isPhysicalDevice` | `bool` | `false` if running on an emulator/simulator |
+| `utsname` | `Utsname` | POSIX `uname()` info: `sysname`, `nodename`, `release`, `version`, `machine` |
+
+#### Android-only properties (empty/default on iOS)
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `board` | `String` | `Build.BOARD` |
+| `bootloader` | `String` | `Build.BOOTLOADER` |
+| `device` | `String` | `Build.DEVICE` |
+| `display` | `String` | `Build.DISPLAY` |
+| `fingerprint` | `String` | `Build.FINGERPRINT` |
+| `hardware` | `String` | `Build.HARDWARE` |
+| `host` | `String` | `Build.HOST` |
+| `buildId` | `String` | `Build.ID` |
+| `product` | `String` | `Build.PRODUCT` |
+| `supported32BitAbis` | `List<String>` | `Build.SUPPORTED_32_BIT_ABIS` |
+| `supported64BitAbis` | `List<String>` | `Build.SUPPORTED_64_BIT_ABIS` |
+| `supportedAbis` | `List<String>` | `Build.SUPPORTED_ABIS` |
+| `tags` | `String` | `Build.TAGS` |
+| `type` | `String` | `Build.TYPE` |
+| `systemFeatures` | `List<String>` | Available system features (`PackageManager`) |
+
+#### iOS-only properties (empty/default on Android)
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `deviceName` | `String` | `UIDevice.current.name` |
+| `modelName` | `String` | Raw hardware identifier (e.g. "iPhone14,2") |
+| `localizedModel` | `String` | `UIDevice.current.localizedModel` |
+| `isiOSAppOnMac` | `bool` | Whether running as an iOS app on Mac |
 
 ### LocaleApp Model
 
 Contains detailed locale information.
 
-#### Properties
+| Property | Type | Description |
+|----------|------|-------------|
+| `languageCode` | `String` | Language code (e.g., 'en', 'vi') |
+| `countryCode` | `String` | Country code (e.g., 'US', 'VN') |
+
+### Utsname Model
+
+POSIX `uname()` info, populated on both Android and iOS.
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `languageCode` | `String` | Language code (e.g., 'en', 'es') |
-| `countryCode` | `String` | Country code (e.g., 'US', 'GB') |
+| `sysname` | `String` | Kernel name |
+| `nodename` | `String` | Network node hostname |
+| `release` | `String` | Kernel release |
+| `version` | `String` | Kernel version |
+| `machine` | `String` | Hardware identifier |
 
 ## 🏗️ Architecture
 
@@ -286,4 +313,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 Made with ❤️ by JunCook
-
