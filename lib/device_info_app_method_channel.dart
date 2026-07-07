@@ -10,6 +10,7 @@ class MethodChannelDeviceInfoApp extends DeviceInfoAppPlatform {
   @visibleForTesting
   final methodChannel = const MethodChannel('device_info_app');
 
+  /// Retrieves device and app information via the native method channel.
   @override
   Future<DeviceInfo> getDeviceInfo() async {
     Map<dynamic, dynamic> appInfo = await methodChannel.invokeMethod(

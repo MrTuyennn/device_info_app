@@ -1,3 +1,9 @@
+## 1.1.1
+
+### 📚 Documentation
+
+- Added dartdoc comments across the public API (`DeviceInfoApp`, the platform interface/method channel classes, and every field of `DeviceInfo`, `LocaleApp`, and `Utsname`) to raise pub.dev documentation coverage.
+
 ## 1.1.0
 
 ### ✨ New features
