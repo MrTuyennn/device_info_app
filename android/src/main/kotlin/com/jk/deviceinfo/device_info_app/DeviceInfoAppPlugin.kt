@@ -14,6 +14,7 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import java.util.Locale
+import java.util.Random
 import java.util.TimeZone
 import java.util.UUID
 
@@ -27,6 +28,14 @@ class DeviceInfoAppPlugin :
     // when the Flutter Engine is detached from the Activity
     private lateinit var channel: MethodChannel
     private lateinit var appContext: Context
+
+    companion object {
+        // 8-character uppercase hex string (e.g. "F40A6D4F"), matching
+        // ^[0-9A-F]{8}$.
+        private val sessionId: String by lazy {
+            String.format("%08X", Random().nextInt())
+        }
+    }
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         appContext = flutterPluginBinding.applicationContext
@@ -56,6 +65,7 @@ class DeviceInfoAppPlugin :
                 }
                 val id = Settings.Secure.getString(appContext.contentResolver, Settings.Secure.ANDROID_ID);
                 uuid = UUID.nameUUIDFromBytes(id.toByteArray()).toString()
+                sessionId = Companion.sessionId
                 locales = language.toString()
                 timeZone = TimeZone.getDefault().id.toString();
                 alphaCode = diaCode

@@ -2,11 +2,7 @@ import 'dart:math';
 
 import '../utils/country_dial_codes.dart';
 
-/// Snapshot of device and app info collected from the native platform.
-///
-/// Populated via [DeviceInfo.fromJson] from the map returned by the native
-/// method channel implementation. Fields that don't apply to the current
-/// platform are left at their default value (empty string, `0`, or `false`).
+/// Snapshot of device and app info returned by the native platform.
 class DeviceInfo {
   /// The app's version number (e.g. "1.0.0"), as declared in the app manifest.
   final String versionNumber;
@@ -145,6 +141,11 @@ class DeviceInfo {
   /// Computed on read so it can never diverge from [alphaCode].
   String get areaCode => dialCodeForCountry(alphaCode);
 
+  /// An 8-character uppercase hex identifier (matching `^[0-9A-F]{8}$`,
+  /// e.g. "F40A6D4F") generated once per app session (i.e. once per native
+  /// process lifetime), as opposed to [uuid] which persists across sessions.
+  final String sessionId;
+
   /// Creates a [DeviceInfo] with the given fields, defaulting to empty/zero
   /// values for anything not provided.
   DeviceInfo({
@@ -153,6 +154,7 @@ class DeviceInfo {
     this.displayName = '',
     this.bundleName = '',
     this.uuid = '',
+    this.sessionId = '',
     this.locales = '',
     this.timeZone = '',
     this.alphaCode = '',
@@ -198,6 +200,7 @@ class DeviceInfo {
       displayName = json["displayName"] ?? '',
       bundleName = json["bundleName"] ?? '',
       uuid = json["uuid"] ?? '',
+      sessionId = json["sessionId"] ?? '',
       locales = json["locales"] ?? '',
       timeZone = json["timeZone"] ?? '',
       alphaCode = json["alphaCode"] ?? '',
@@ -242,6 +245,7 @@ class DeviceInfo {
     "displayName": displayName,
     "bundleName": bundleName,
     "uuid": uuid,
+    "sessionId": sessionId,
     "locales": locales,
     "timeZone": timeZone,
     "alphaCode": alphaCode,
@@ -302,8 +306,7 @@ class LocaleApp {
       countryCode = json["countryCode"] ?? '';
 }
 
-/// POSIX `uname()` info. Populated on both Android and iOS since both run
-/// on top of a kernel that exposes this via the `uname` syscall.
+/// POSIX `uname()` info for the device.
 class Utsname {
   /// The operating system name.
   final String sysname;

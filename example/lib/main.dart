@@ -53,6 +53,7 @@ class _MyAppState extends State<MyApp> {
                     Text('App Name: ${_deviceInfo!.displayName}'),
                     Text('Bundle ID: ${_deviceInfo!.bundleName}'),
                     Text('Device UUID: ${_deviceInfo!.uuid}'),
+                    Text('Session ID: ${_deviceInfo!.sessionId}'),
                     Text('Locales: ${_deviceInfo!.locales}'),
                     Text('Time Zone: ${_deviceInfo!.timeZone}'),
                     Text('Country Code: ${_deviceInfo!.alphaCode}'),

@@ -33,7 +33,7 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  device_info_app: ^1.1.0
+  device_info_app: ^1.1.2
 ```
 
 Then run:
@@ -176,6 +176,7 @@ The data model containing all device and app information.
 | `displayName` | `String` | Application display name |
 | `bundleName` | `String` | Application bundle identifier |
 | `uuid` | `String` | Device unique identifier |
+| `sessionId` | `String` | 8-char uppercase hex ID (e.g. "F40A6D4F"), generated once per app session |
 | `locales` | `String` | Device locale information |
 | `timeZone` | `String` | Device timezone |
 | `alphaCode` | `String` | Country alpha code from device locale (e.g. "VN") |

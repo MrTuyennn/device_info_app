@@ -1,3 +1,9 @@
+## 1.1.2
+
+### ✨ New features
+
+- Added `sessionId` — an 8-character uppercase hex ID (e.g. "F40A6D4F"), generated once per app session.
+
 ## 1.1.1
 
 ### 📚 Documentation

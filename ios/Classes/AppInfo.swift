@@ -16,6 +16,7 @@ struct AppInfo {
     let displayName: String
     let bundleName: String
     let uuid: String
+    let sessionId: String
     let locales: String
     let timeZone: String
     let alphaCode: String
@@ -50,6 +51,7 @@ struct AppInfo {
                 "displayName": displayName,
                 "bundleName": bundleName,
                 "uuid": uuid,
+                "sessionId": sessionId,
                 "locales": locales,
                 "timeZone":timeZone,
                 "alphaCode": alphaCode,
@@ -99,6 +101,10 @@ struct Utsname {
     }
 }
 
+// 8-character uppercase hex string (e.g. "F40A6D4F"), matching
+// ^[0-9A-F]{8}$.
+private let sessionId = String(format: "%08X", UInt32.random(in: 0...UInt32.max))
+
 func versionApp() -> AppInfo {
     let dictionary = Bundle.main.infoDictionary!
     let versionNumber = dictionary[Constants.InfoPlist.versionNumber] as! String
@@ -135,6 +141,7 @@ func versionApp() -> AppInfo {
         displayName: displayName,
         bundleName: bundleName,
         uuid: uuid,
+        sessionId: sessionId,
         locales: locale,
         timeZone: timeZone,
         alphaCode: countryCode ?? "",

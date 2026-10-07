@@ -6,6 +6,7 @@ class AppInfo {
     var displayName: String = ""
     var bundleName: String = ""
     var uuid: String =""
+    var sessionId: String = ""
     var locales: String = ""
     var alphaCode: String = ""
     var timeZone: String = ""
@@ -49,6 +50,7 @@ class AppInfo {
             "displayName" to displayName,
             "bundleName" to bundleName,
             "uuid" to uuid,
+            "sessionId" to sessionId,
             "locales" to locales,
             "timeZone" to timeZone,
             "alphaCode" to alphaCode,

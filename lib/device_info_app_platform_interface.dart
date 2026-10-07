@@ -3,12 +3,7 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'device_info_app_method_channel.dart';
 
-/// The interface that platform-specific implementations of this plugin must
-/// implement.
-///
-/// Platform implementations should extend this class rather than implement
-/// it as `DeviceInfoAppPlatform`, so new methods added here don't break
-/// existing implementations.
+/// Platform interface implemented per-platform via method channel.
 abstract class DeviceInfoAppPlatform extends PlatformInterface {
   /// Constructs a DeviceInfoAppPlatform.
   DeviceInfoAppPlatform() : super(token: _token);
@@ -22,9 +17,8 @@ abstract class DeviceInfoAppPlatform extends PlatformInterface {
   /// Defaults to [MethodChannelDeviceInfoApp].
   static DeviceInfoAppPlatform get instance => _instance;
 
-  /// Platform-specific implementations should set this with their own
-  /// platform-specific class that extends [DeviceInfoAppPlatform] when
-  /// they register themselves.
+  /// Sets the platform instance, used by platform implementations to
+  /// register themselves.
   static set instance(DeviceInfoAppPlatform instance) {
     PlatformInterface.verifyToken(instance, _token);
     _instance = instance;
